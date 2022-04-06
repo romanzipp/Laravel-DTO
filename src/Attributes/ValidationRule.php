@@ -5,7 +5,7 @@ namespace romanzipp\LaravelDTO\Attributes;
 use Attribute;
 
 #[Attribute]
-class ValidatesInput implements DTOAttribute
+class ValidationRule implements DTOAttribute
 {
     public array $rules;
 

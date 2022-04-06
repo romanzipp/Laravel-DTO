@@ -6,12 +6,12 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use romanzipp\DTO\AbstractData;
 use romanzipp\DTO\Exceptions\InvalidDataException;
-use romanzipp\LaravelDTO\Attributes\ValidatesInput;
+use romanzipp\LaravelDTO\Attributes\ValidationRule;
 
 abstract class AbstractModelData extends AbstractData
 {
     private const INTERNAL_ATTRIBUTES = [
-        ValidatesInput::class,
+        ValidationRule::class,
     ];
 
     /**
@@ -34,15 +34,15 @@ abstract class AbstractModelData extends AbstractData
 
                 $name = $property->getName();
 
-                /** @var \romanzipp\LaravelDTO\Attributes\ValidatesInput $validation */
+                /** @var \romanzipp\LaravelDTO\Attributes\ValidationRule $validation */
                 $validation = $attribute->newInstance();
 
                 $validationRules[$name] = $validation->rules;
-                $validationData[$name] = $data['name'] ?? null;
+                $validationData[$name] = $data[$name] ?? null;
             }
         }
 
-        // dd($data,$rules);
+         #dd($validationData,$validationRules);
 
         $validator = Validator::make($validationData, $validationRules);
         $validator->validate();
