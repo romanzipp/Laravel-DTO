@@ -12,6 +12,9 @@ class Property
 {
     private string $name;
 
+    /**
+     * @var mixed[]
+     */
     private array $validationRules = [];
 
     private ?string $modelAttribute = null;
@@ -66,6 +69,9 @@ class Property
         return $this->name;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function getValidationRules(): array
     {
         return $this->validationRules;
