@@ -27,7 +27,7 @@ class RequestTest extends TestCase
         self::assertFalse($data->isset('name'));
     }
 
-    public function testMissingRequestAttributeName()
+    public function testRequestWithoutAttributeName()
     {
         $data = RequestSampleDataMissingRequestAttributeName::fromRequest(
             Request::create('/', 'POST', ['name' => 'Foo'])
@@ -46,6 +46,6 @@ class RequestSampleData extends AbstractModelData
 
 class RequestSampleDataMissingRequestAttributeName extends AbstractModelData
 {
-    #[RequestAttribute()]
+    #[RequestAttribute]
     public string $name;
 }

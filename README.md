@@ -22,6 +22,40 @@ composer require romanzipp/laravel-dto
 
 ## Usage
 
+```php
+use romanzipp\LaravelDTO\AbstractModelData;
+use romanzipp\LaravelDTO\Attributes\ForModel;
+use romanzipp\LaravelDTO\Attributes\RequestAttribute;
+use romanzipp\LaravelDTO\Attributes\ValidationRule;
+use romanzipp\LaravelDTO\Attributes\ModelAttribute;
+
+#[ForModel(SampleModel::class)]
+class MyModelData extends AbstractModelData
+{
+    #[RequestAttribute('first_name')]
+    #[ModelAttribute]
+    #[ValidationRule(['required'])]
+    public string $name;
+    
+    #[RequestAttribute('first_name'), ModelAttribute, ValidationRule(['required'])]
+    public string $age;
+}
+```
+
+```php
+use Illuminate\Http\Request;
+
+class TestController
+{
+    public function index(Request $request)
+    {
+        $model = MyModelData::fromRequest($request)->makeModel()->create();
+        
+        return $model->id;
+    }
+}
+```
+
 ## Testing
 
 ```

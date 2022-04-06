@@ -2,6 +2,7 @@
 
 namespace romanzipp\LaravelDTO;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -13,6 +14,45 @@ use RuntimeException;
 
 abstract class AbstractModelData extends AbstractData
 {
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function __construct(array $data = [])
+    {
+        $properties = Property::collectFromClass(static::class);
+
+        $validationRules = [];
+        $validationData = [];
+
+        foreach ($properties as $property) {
+            $rules = $property->getValidationRules();
+
+            if (empty($rules)) {
+                continue;
+            }
+
+            $validationRules[$property->getName()] = $rules;
+            $validationData[$property->getName()] = $data[$property->getName()] ?? null; // TODO maybe skip instead of null?
+        }
+
+        $validator = Validator::make($validationData, $validationRules);
+        $validator->validate();
+
+        try {
+            parent::__construct($data);
+        } catch (InvalidDataException $exception) {
+            $messages = [];
+
+            foreach ($exception->getProperties() as $property) {
+                $messages[$property->getName()] = "The {$property->getName()} field is invalid.";
+            }
+
+            throw ValidationException::withMessages($messages);
+        }
+    }
+
     public static function fromRequest(Request $request): static
     {
         $payload = $request->all();
@@ -31,7 +71,7 @@ abstract class AbstractModelData extends AbstractData
         return new static($data);
     }
 
-    public function makeModel()
+    public function makeModel(): Model
     {
         $modelClass = null;
 
@@ -62,46 +102,5 @@ abstract class AbstractModelData extends AbstractData
 
         /** @var \Illuminate\Database\Eloquent\Model $modelClass */
         return new $modelClass($attributes);
-    }
-
-    /**
-     * @param array<string, mixed> $data
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    public function __construct(array $data = [])
-    {
-        $properties = Property::collectFromClass(static::class);
-
-        $validationRules = [];
-        $validationData = [];
-
-        foreach ($properties as $property) {
-            $rules = $property->getValidationRules();
-
-            if (empty($rules)) {
-                continue;
-            }
-
-            $validationRules[$property->getName()] = $rules;
-            $validationData[$property->getName()] = $data[$property->getName()] ?? null; // TODO maybe skip instead of null?
-        }
-
-        // dd($validationData,$validationRules);
-
-        $validator = Validator::make($validationData, $validationRules);
-        $validator->validate();
-
-        try {
-            parent::__construct($data);
-        } catch (InvalidDataException $exception) {
-            $messages = [];
-
-            foreach ($exception->getProperties() as $property) {
-                $messages[$property->getName()] = "The {$property->getName()} field is invalid.";
-            }
-
-            throw ValidationException::withMessages($messages);
-        }
     }
 }

@@ -5,7 +5,7 @@ namespace romanzipp\LaravelDTO\Attributes;
 use Attribute;
 
 #[Attribute]
-class RequestAttribute
+class RequestAttribute implements DTOAttribute
 {
     public function __construct(
         private ?string $name = null

@@ -5,7 +5,7 @@ namespace romanzipp\LaravelDTO\Attributes;
 use Attribute;
 
 #[Attribute]
-class ModelAttribute
+class ModelAttribute implements DTOAttribute
 {
     public function __construct(
         private ?string $attribute = null
