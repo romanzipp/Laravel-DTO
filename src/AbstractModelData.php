@@ -2,17 +2,67 @@
 
 namespace romanzipp\LaravelDTO;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use ReflectionClass;
 use romanzipp\DTO\AbstractData;
 use romanzipp\DTO\Exceptions\InvalidDataException;
-use romanzipp\LaravelDTO\Attributes\ValidationRule;
+use romanzipp\LaravelDTO\Attributes\ForModel;
+use RuntimeException;
 
 abstract class AbstractModelData extends AbstractData
 {
-    private const INTERNAL_ATTRIBUTES = [
-        ValidationRule::class,
-    ];
+    public static function fromRequest(Request $request): static
+    {
+        $payload = $request->all();
+        $data = [];
+
+        foreach (Property::collectFromClass(static::class) as $property) {
+            $requestAttribute = $property->getRequestAttribute();
+
+            if (null === $requestAttribute || ! isset($payload[$requestAttribute])) {
+                continue;
+            }
+
+            $data[$property->getName()] = $payload[$requestAttribute];
+        }
+
+        return new static($data);
+    }
+
+    public function makeModel()
+    {
+        $modelClass = null;
+
+        $reflectionClass = new ReflectionClass(static::class);
+
+        foreach ($reflectionClass->getAttributes(ForModel::class) as $attribute) {
+            /** @var \romanzipp\LaravelDTO\Attributes\ForModel $attributeInstance */
+            $attributeInstance = $attribute->newInstance();
+            $modelClass = $attributeInstance->model;
+            break;
+        }
+
+        if (null === $modelClass) {
+            throw new RuntimeException('No model defined for DTO');
+        }
+
+        $attributes = [];
+
+        foreach (Property::collectFromClass(static::class) as $property) {
+            $modelAttribute = $property->getModelAttribute();
+
+            if (null === $modelAttribute || ! $this->isset($property->getName())) {
+                continue;
+            }
+
+            $attributes[$modelAttribute] = $this->{$property->getName()};
+        }
+
+        /** @var \Illuminate\Database\Eloquent\Model $modelClass */
+        return new $modelClass($attributes);
+    }
 
     /**
      * @param array<string, mixed> $data
@@ -21,25 +71,20 @@ abstract class AbstractModelData extends AbstractData
      */
     public function __construct(array $data = [])
     {
-        $reflectionClass = new \ReflectionClass(static::class);
+        $properties = Property::collectFromClass(static::class);
 
         $validationRules = [];
         $validationData = [];
 
-        foreach ($reflectionClass->getProperties() as $property) {
-            foreach ($property->getAttributes() as $attribute) {
-                if ( ! in_array($attribute->getName(), self::INTERNAL_ATTRIBUTES)) {
-                    continue;
-                }
+        foreach ($properties as $property) {
+            $rules = $property->getValidationRules();
 
-                $name = $property->getName();
-
-                /** @var \romanzipp\LaravelDTO\Attributes\ValidationRule $validation */
-                $validation = $attribute->newInstance();
-
-                $validationRules[$name] = $validation->rules;
-                $validationData[$name] = $data[$name] ?? null;
+            if (empty($rules)) {
+                continue;
             }
+
+            $validationRules[$property->getName()] = $rules;
+            $validationData[$property->getName()] = $data[$property->getName()] ?? null; // TODO maybe skip instead of null?
         }
 
         // dd($validationData,$validationRules);

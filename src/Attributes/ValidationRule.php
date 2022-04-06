@@ -7,10 +7,16 @@ use Attribute;
 #[Attribute]
 class ValidationRule implements DTOAttribute
 {
-    public array $rules;
+    /**
+     * @param array $rules
+     */
+    public function __construct(
+        private array $rules
+    ) {
+    }
 
-    public function __construct(array $rules)
+    public function getRules(): array
     {
-        $this->rules = $rules;
+        return $this->rules;
     }
 }
