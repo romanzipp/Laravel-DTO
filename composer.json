@@ -1,5 +1,5 @@
 {
-    "name": "romanzipp/dto-laravel",
+    "name": "romanzipp/laravel-dto",
     "description": "A strongly typed Data Transfer Object integration for Laravel",
     "license": "MIT",
     "type": "library",
