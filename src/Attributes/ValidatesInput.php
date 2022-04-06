@@ -11,6 +11,6 @@ class ValidatesInput implements DTOAttribute
 
     public function __construct(array $rules)
     {
-        $this->rules=$rules;
+        $this->rules = $rules;
     }
 }
