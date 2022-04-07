@@ -334,9 +334,9 @@ class TestController
 
 ## Type Casting
 
-You can declare custom type cast attributes by simply implementing the [`CastInterface`](src/Attributes/Casts/CastInterface.php) interface and attaching an attribute.
+Type casts will convert any given value to a specified type.
 
-### Built-in Casts
+### Built-in type casts
 
 #### [`CastToDate`](src/Attributes/Casts/CastToDate.php)
 
@@ -352,6 +352,24 @@ class PersonData extends AbstractModelData
 {
     #[CastToDate]
     public Carbon $date;
+}
+```
+
+### Custom type casts
+
+You can declare custom type cast attributes by simply implementing the [`CastInterface`](src/Attributes/Casts/CastInterface.php) interface and attaching an attribute.
+
+```php
+use Attribute;
+use romanzipp\LaravelDTO\Attributes\Casts\CastInterface;
+
+#[Attribute]
+class MyCast implements CastInterface
+{
+    public function castToType(mixed $value): mixed
+    {
+        return (string) $value;
+    }
 }
 ```
 
