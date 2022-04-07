@@ -27,14 +27,13 @@ abstract class AbstractModelData extends AbstractData
         $validationData = [];
 
         foreach ($properties as $property) {
-            $rules = $property->getValidationRules();
-
-            if (empty($rules)) {
-                continue;
+            if ( ! empty($rules = $property->getValidationRules())) {
+                $validationRules[$property->getName()] = $rules;
             }
 
-            $validationRules[$property->getName()] = $rules;
-            $validationData[$property->getName()] = $data[$property->getName()] ?? null; // TODO maybe skip instead of null?
+            if (array_key_exists($property->getName(), $data)) {
+                $validationData[$property->getName()] = $data[$property->getName()];
+            }
         }
 
         $validator = Validator::make($validationData, $validationRules);
