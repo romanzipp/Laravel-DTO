@@ -28,6 +28,7 @@ use romanzipp\LaravelDTO\Attributes\ForModel;
 use romanzipp\LaravelDTO\Attributes\RequestAttribute;
 use romanzipp\LaravelDTO\Attributes\ValidationRule;
 use romanzipp\LaravelDTO\Attributes\ModelAttribute;
+use romanzipp\LaravelDTO\Attributes\ValidatedRequestModelAttribute;
 use Illuminate\Validation\Rules\Exists;
 
 #[ForModel(SampleModel::class)]
@@ -41,6 +42,9 @@ class MyModelData extends AbstractModelData
     
     #[ValidationRule([new Exists(ProjectModell::class, 'id')])]
     public string $projectId;
+    
+    #[ValidatedRequestModelAttribute(['required', 'min:1'], 'person_height', 'person_height')]
+    public int $height;
 }
 ```
 
