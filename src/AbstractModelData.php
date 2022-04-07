@@ -53,9 +53,18 @@ abstract class AbstractModelData extends AbstractData
         }
     }
 
+    /**
+     * Take request input and fill into DTO base on the #[RequestAttribute].
+     *
+     * @see \romanzipp\LaravelDTO\Attributes\RequestAttribute
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return static
+     */
     public static function fromRequest(Request $request): static
     {
-        $payload = $request->all();
+        $payload = $request->input();
         $data = [];
 
         foreach (Property::collectFromClass(static::class) as $property) {
