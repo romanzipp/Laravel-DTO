@@ -14,6 +14,8 @@ use RuntimeException;
 
 abstract class AbstractModelData extends AbstractData
 {
+    private const FLAG_IS_REQUEST_DATA = '__is_request_data';
+
     /**
      * @param array<string, mixed> $data
      *
@@ -45,12 +47,22 @@ abstract class AbstractModelData extends AbstractData
             if ($nestedClass = $property->getNestedClass()) {
                 $nestedData = [];
                 foreach ($data[$property->getName()] as $datum) {
-                    $nestedData[] = new $nestedClass($datum);
+                    /**
+                     * @var $nestedClass \romanzipp\LaravelDTO\AbstractModelData
+                     */
+                    if (isset($data[self::FLAG_IS_REQUEST_DATA])) {
+                        $datum[self::FLAG_IS_REQUEST_DATA] = true;
+                        $nestedData[] = $nestedClass::fromRequestData($datum);
+                    } else {
+                        $nestedData[] = new $nestedClass($datum);
+                    }
                 }
 
                 $data[$property->getName()] = $nestedData;
             }
         }
+
+        unset($data[self::FLAG_IS_REQUEST_DATA]);
 
         try {
             parent::__construct($data);
@@ -76,7 +88,16 @@ abstract class AbstractModelData extends AbstractData
      */
     public static function fromRequest(Request $request): static
     {
-        $payload = $request->input();
+        return self::fromRequestData($request->input());
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     *
+     * @return static
+     */
+    protected static function fromRequestData(array $payload): static
+    {
         $data = [];
 
         foreach (Property::collectFromClass(static::class) as $property) {
@@ -89,9 +110,16 @@ abstract class AbstractModelData extends AbstractData
             $data[$property->getName()] = $payload[$requestAttribute];
         }
 
+        $data[self::FLAG_IS_REQUEST_DATA] = true;
+
         return new static($data);
     }
 
+    /**
+     * Fill properties marked with #[ModelAttribute] to new model instanced declared in #[ForModel].
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
     public function toModel(): Model
     {
         $modelClass = null;
