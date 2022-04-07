@@ -35,10 +35,10 @@ abstract class AbstractModelData extends AbstractData
 
             if (array_key_exists($property->getName(), $data)) {
                 $validationData[$property->getValidatorKeyName()] = $data[$property->getName()];
-            }
 
-            if ($property->hasCast()) {
-                $data[$property->getName()] = $property->getCastedType($data[$property->getName()]);
+                if ($property->hasCast()) {
+                    $data[$property->getName()] = $property->getCastedType($data[$property->getName()]);
+                }
             }
         }
 
