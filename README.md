@@ -15,6 +15,12 @@ Laravel-DTO serves as an **intermediate and reusable layer** between request inp
 
 - [Installation](#installation)
 - [Usage](#usage)
+  - [Validation](#validation)
+  - [Populate models](#populate-models)
+  - [Populate DTO from request](#populate-dto-from-request-input-data)
+  - [**Combined usage**](#combined-usage)
+- [Best practices](#best-practices)
+- [Testing](#testing)
 
 ## Installation
 
@@ -354,8 +360,16 @@ class PersonData extends AbstractModelData
 
 ## Testing
 
+### PHPUnit
+
 ```
 ./vendor/bin/phpunit
+```
+
+### PHPStan
+
+```
+./vendor/bin/phpstan
 ```
 
 ## Authors
