@@ -101,4 +101,9 @@ class Property
     {
         return $this->nestedClass;
     }
+
+    public function getValidatorKeyName(): string
+    {
+        return $this->requestAttribute ?? $this->name;
+    }
 }

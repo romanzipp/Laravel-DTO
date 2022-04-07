@@ -3,8 +3,10 @@
 namespace romanzipp\LaravelDTO\Tests;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use romanzipp\LaravelDTO\AbstractModelData;
 use romanzipp\LaravelDTO\Attributes\RequestAttribute;
+use romanzipp\LaravelDTO\Attributes\ValidationRule;
 
 class RequestTest extends TestCase
 {
@@ -36,6 +38,19 @@ class RequestTest extends TestCase
         self::assertTrue($data->isset('name'));
         self::assertSame('Foo', $data->name);
     }
+
+    public function testRequestDataErrorKeyCorrect()
+    {
+        try {
+            RequestSampleDataWithValidation::fromRequest(
+                Request::create('/', 'POST', ['some_name' => null])
+            );
+
+            self::fail();
+        } catch (ValidationException $exception) {
+            self::assertArrayHasKey('some_name', $exception->errors());
+        }
+    }
 }
 
 class RequestSampleData extends AbstractModelData
@@ -47,5 +62,11 @@ class RequestSampleData extends AbstractModelData
 class RequestSampleDataMissingRequestAttributeName extends AbstractModelData
 {
     #[RequestAttribute]
+    public string $name;
+}
+
+class RequestSampleDataWithValidation extends AbstractModelData
+{
+    #[RequestAttribute('some_name'), ValidationRule(['required'])]
     public string $name;
 }

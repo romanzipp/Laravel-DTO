@@ -28,11 +28,11 @@ abstract class AbstractModelData extends AbstractData
 
         foreach ($properties as $property) {
             if ( ! empty($rules = $property->getValidationRules())) {
-                $validationRules[$property->getName()] = $rules;
+                $validationRules[$property->getValidatorKeyName()] = $rules;
             }
 
             if (array_key_exists($property->getName(), $data)) {
-                $validationData[$property->getName()] = $data[$property->getName()];
+                $validationData[$property->getValidatorKeyName()] = $data[$property->getName()];
             }
         }
 
