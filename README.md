@@ -133,13 +133,13 @@ use romanzipp\LaravelDTO\Attributes\RequestAttribute;
 #[ForModel(Person::class)]
 class PersonData extends AbstractModelData
 {
-    #[RequestAttribute]                 // The `$name` DTO property will de populated by the `name` request attribute
+    #[RequestAttribute]            // The `$name` DTO property will de populated by the `name` request attribute
     public string $name;
 
-    #[RequestAttribute('my_age')]  // The `$currentAge` DTO property will be populated by `current_age` request attribute
+    #[RequestAttribute('my_age')]  // The `$currentAge` DTO property will be populated by `my_age` request attribute
     public int $currentAge;
 
-    public string $language;            // The `$language` DTO property will not be populated
+    public string $language;       // The `$language` DTO property will not be populated
 }
 ```
 
@@ -314,9 +314,10 @@ class TestController
         $person = $personData->toModel()->save();
 
         foreach ($personData->addresses as $addressData) {
-            $address = $addressData->toModel();
-            $address->person()->attach($person);
-            $address->save();
+            // We assume the `Person` model has a has-many relation with the `Address` model
+            $person->addresses()->save(
+                $addressData->toModel()
+            );
         }
 
         return $person->id;
