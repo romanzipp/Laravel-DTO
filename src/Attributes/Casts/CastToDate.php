@@ -14,7 +14,12 @@ class CastToDate implements CastInterface
 
     public function castToType(mixed $value): mixed
     {
-        return $this->getDateClass()::make($value);
+        /**
+         * @var \Carbon\CarbonInterface $dateClass
+         */
+        $dateClass = $this->getDateClass();
+
+        return $dateClass::make($value);
     }
 
     public function getDateClass(): string

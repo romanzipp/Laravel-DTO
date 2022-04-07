@@ -340,7 +340,7 @@ Type casts will convert any given value to a specified type.
 
 #### [`CastToDate`](src/Attributes/Casts/CastToDate.php)
 
-The [`#[CastToDate]`](src/Attributes/Casts/CastToDate.php) attribute will respect your customly defined date class from `Date::use(...)`. By default it will cast to `Carbon\Carbon`.
+The [`#[CastToDate]`](src/Attributes/Casts/CastToDate.php) attribute will respect your customly defined date class from `Date::use(...)`.
 You can also specify a custom date class to be used by passing the date class name as single argument [`#[CastToDate(MyDateClass::class)]`](src/Attributes/Casts/CastToDate.php).
 
 ```php

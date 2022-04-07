@@ -5,6 +5,7 @@ namespace romanzipp\LaravelDTO\Tests;
 use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use romanzipp\LaravelDTO\AbstractModelData;
 use romanzipp\LaravelDTO\Attributes\Casts\CastToDate;
 use romanzipp\LaravelDTO\Attributes\RequestAttribute;
@@ -32,6 +33,28 @@ class CastTest extends TestCase
 
         self::assertInstanceOf(AbstractModelData::class, $data);
         self::assertInstanceOf(CarbonImmutable::class, $data->date);
+    }
+
+    public function testDateCastAlreadyInstanceOf()
+    {
+        $data = new class(['date' => Carbon::now()]) extends AbstractModelData {
+            #[ValidationRule(['date']), CastToDate]
+            public Carbon $date;
+        };
+
+        self::assertInstanceOf(AbstractModelData::class, $data);
+        self::assertInstanceOf(Carbon::class, $data->date);
+    }
+
+    public function testDateCastUncastable()
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('The date field is invalid.');
+
+        new class(['date' => (object) []]) extends AbstractModelData {
+            #[CastToDate]
+            public Carbon $date;
+        };
     }
 
     public function testDateCastFromRequest()
