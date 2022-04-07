@@ -28,6 +28,7 @@ use romanzipp\LaravelDTO\Attributes\ForModel;
 use romanzipp\LaravelDTO\Attributes\RequestAttribute;
 use romanzipp\LaravelDTO\Attributes\ValidationRule;
 use romanzipp\LaravelDTO\Attributes\ModelAttribute;
+use Illuminate\Validation\Rules\Exists;
 
 #[ForModel(SampleModel::class)]
 class MyModelData extends AbstractModelData
@@ -37,6 +38,9 @@ class MyModelData extends AbstractModelData
 
     #[RequestAttribute, ModelAttribute, ValidationRule(['required', 'numeric'])]
     public string $age;
+    
+    #[ValidationRule([new Exists(ProjectModell::class, 'id')])]
+    public string $projectId;
 }
 ```
 

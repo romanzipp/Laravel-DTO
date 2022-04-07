@@ -4,12 +4,17 @@ namespace romanzipp\LaravelDTO;
 
 use ReflectionClass;
 use ReflectionProperty;
-use romanzipp\LaravelDTO\Attributes\ModelAttribute;
-use romanzipp\LaravelDTO\Attributes\RequestAttribute;
-use romanzipp\LaravelDTO\Attributes\ValidationRule;
+use romanzipp\LaravelDTO\Attributes\Interfaces;
 
 class Property
 {
+    private const INTERNAL_ATTRIBUTES = [
+        Attributes\ModelAttribute::class,
+        Attributes\RequestAttribute::class,
+        Attributes\ValidationRule::class,
+        Attributes\ValidatedRequestModelAttribute::class,
+    ];
+
     private string $name;
 
     /**
@@ -26,24 +31,22 @@ class Property
         $this->name = $reflectionProperty->getName();
 
         foreach ($reflectionProperty->getAttributes() as $reflectionAttribute) {
-            switch ($reflectionAttribute->getName()) {
-                case ValidationRule::class:
-                    /** @var \romanzipp\LaravelDTO\Attributes\ValidationRule $attributeInstance */
-                    $attributeInstance = $reflectionAttribute->newInstance();
-                    $this->validationRules = $attributeInstance->getRules();
-                    break;
+            if ( ! in_array($reflectionAttribute->getName(), self::INTERNAL_ATTRIBUTES)) {
+                continue;
+            }
 
-                case ModelAttribute::class:
-                    /** @var \romanzipp\LaravelDTO\Attributes\ModelAttribute $attributeInstance */
-                    $attributeInstance = $reflectionAttribute->newInstance();
-                    $this->modelAttribute = $attributeInstance->getName() ?? $this->name;
-                    break;
+            $attributeInstance = $reflectionAttribute->newInstance();
 
-                case RequestAttribute::class:
-                    /** @var \romanzipp\LaravelDTO\Attributes\RequestAttribute $attributeInstance */
-                    $attributeInstance = $reflectionAttribute->newInstance();
-                    $this->requestAttribute = $attributeInstance->getName() ?? $this->name;
-                    break;
+            if ($attributeInstance instanceof Interfaces\ValidationRuleAttributeInterface) {
+                $this->validationRules = $attributeInstance->getRules();
+            }
+
+            if ($attributeInstance instanceof Interfaces\ModelAttributeInterface) {
+                $this->modelAttribute = $attributeInstance->getModelAttribute() ?? $this->name;
+            }
+
+            if ($attributeInstance instanceof Interfaces\RequestAttributeInterface) {
+                $this->requestAttribute = $attributeInstance->getRequestAttribute() ?? $this->name;
             }
         }
     }

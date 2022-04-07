@@ -3,16 +3,18 @@
 namespace romanzipp\LaravelDTO\Attributes;
 
 use Attribute;
+use romanzipp\LaravelDTO\Attributes\Interfaces\DataAttributeInterface;
+use romanzipp\LaravelDTO\Attributes\Interfaces\RequestAttributeInterface;
 
 #[Attribute]
-class RequestAttribute implements DTOAttribute
+class RequestAttribute implements DataAttributeInterface, RequestAttributeInterface
 {
     public function __construct(
         private ?string $name = null
     ) {
     }
 
-    public function getName(): ?string
+    public function getRequestAttribute(): ?string
     {
         return $this->name;
     }

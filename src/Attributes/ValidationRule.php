@@ -3,9 +3,11 @@
 namespace romanzipp\LaravelDTO\Attributes;
 
 use Attribute;
+use romanzipp\LaravelDTO\Attributes\Interfaces\DataAttributeInterface;
+use romanzipp\LaravelDTO\Attributes\Interfaces\ValidationRuleAttributeInterface;
 
 #[Attribute]
-class ValidationRule implements DTOAttribute
+class ValidationRule implements DataAttributeInterface, ValidationRuleAttributeInterface
 {
     /**
      * @param mixed[] $rules
