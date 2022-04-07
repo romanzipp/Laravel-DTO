@@ -5,6 +5,7 @@ namespace romanzipp\LaravelDTO\Tests;
 use Illuminate\Validation\ValidationException;
 use romanzipp\DTO\Attributes\Required;
 use romanzipp\LaravelDTO\AbstractModelData;
+use romanzipp\LaravelDTO\Attributes\NestedModelData;
 use romanzipp\LaravelDTO\Attributes\ValidationRule;
 
 class ValidationTest extends TestCase
@@ -63,4 +64,100 @@ class ValidationTest extends TestCase
             public string $name;
         };
     }
+
+    public function testNestedValidation()
+    {
+        $data = new class(['items' => [['name' => 'Foo']]]) extends AbstractModelData {
+            /**
+             * @var \romanzipp\LaravelDTO\Tests\ValidationNestedItem[]
+             */
+            #[NestedModelData(ValidationNestedItem::class), ValidationRule(['required', 'array'])]
+            public array $items;
+        };
+
+        self::assertInstanceOf(AbstractModelData::class, $data);
+        self::assertCount(1, $data->items);
+        self::assertInstanceOf(ValidationNestedItem::class, $data->items[0]);
+        self::assertSame('Foo', $data->items[0]->name);
+    }
+
+    public function testNestedValidationMultipleItems()
+    {
+        $data = new class(['items' => [['name' => 'Foo'], ['name' => 'Bar']]]) extends AbstractModelData {
+            /**
+             * @var \romanzipp\LaravelDTO\Tests\ValidationNestedItem[]
+             */
+            #[NestedModelData(ValidationNestedItem::class), ValidationRule(['required', 'array'])]
+            public array $items;
+        };
+
+        self::assertInstanceOf(AbstractModelData::class, $data);
+        self::assertCount(2, $data->items);
+        self::assertInstanceOf(ValidationNestedItem::class, $data->items[0]);
+        self::assertSame('Foo', $data->items[0]->name);
+        self::assertInstanceOf(ValidationNestedItem::class, $data->items[1]);
+        self::assertSame('Bar', $data->items[1]->name);
+    }
+
+    public function testNestedValidationParentWrongType()
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('The items must be an array.');
+
+        new class(['items' => 'Foo']) extends AbstractModelData {
+            /**
+             * @var \romanzipp\LaravelDTO\Tests\ValidationNestedItem[]
+             */
+            #[NestedModelData(ValidationNestedItem::class), ValidationRule(['required', 'array'])]
+            public array $items;
+        };
+    }
+
+    public function testNestedValidationParentNull()
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('The items field is required.');
+
+        new class(['items' => null]) extends AbstractModelData {
+            /**
+             * @var \romanzipp\LaravelDTO\Tests\ValidationNestedItem[]
+             */
+            #[NestedModelData(ValidationNestedItem::class), ValidationRule(['required', 'array'])]
+            public array $items;
+        };
+    }
+
+    public function testNestedValidationParentMissing()
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('The items field is required.');
+
+        new class([]) extends AbstractModelData {
+            /**
+             * @var \romanzipp\LaravelDTO\Tests\ValidationNestedItem[]
+             */
+            #[NestedModelData(ValidationNestedItem::class), ValidationRule(['required', 'array'])]
+            public array $items;
+        };
+    }
+
+    public function testNestedValidationInvalidItem()
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('The name must be a string.');
+
+        new class(['items' => [['name' => 123]]]) extends AbstractModelData {
+            /**
+             * @var \romanzipp\LaravelDTO\Tests\ValidationNestedItem[]
+             */
+            #[NestedModelData(ValidationNestedItem::class), ValidationRule(['required', 'array'])]
+            public array $items;
+        };
+    }
+}
+
+class ValidationNestedItem extends AbstractModelData
+{
+    #[ValidationRule(['string'])]
+    public string $name;
 }

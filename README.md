@@ -23,30 +23,62 @@ composer require romanzipp/laravel-dto
 ## Usage
 
 ```php
+use Illuminate\Validation\Rules\Exists;
 use romanzipp\LaravelDTO\AbstractModelData;
 use romanzipp\LaravelDTO\Attributes\ForModel;
-use romanzipp\LaravelDTO\Attributes\RequestAttribute;
-use romanzipp\LaravelDTO\Attributes\ValidationRule;
 use romanzipp\LaravelDTO\Attributes\ModelAttribute;
+use romanzipp\LaravelDTO\Attributes\NestedModelData;
+use romanzipp\LaravelDTO\Attributes\RequestAttribute;
 use romanzipp\LaravelDTO\Attributes\ValidatedRequestModelAttribute;
-use Illuminate\Validation\Rules\Exists;
+use romanzipp\LaravelDTO\Attributes\ValidationRule;
 
-#[ForModel(SampleModel::class)]
-class MyModelData extends AbstractModelData
+#[ForModel(Person::class)]
+class PersonData extends AbstractModelData
 {
     #[RequestAttribute('first_name'), ModelAttribute, ValidationRule(['required'])]
     public string $name;
 
     #[RequestAttribute, ModelAttribute, ValidationRule(['required', 'numeric'])]
     public string $age;
-    
+
     #[ValidationRule([new Exists(ProjectModell::class, 'id')])]
     public string $projectId;
-    
-    #[ValidatedRequestModelAttribute(['required', 'min:1'], 'person_height', 'person_height')]
+
+    #[ValidatedRequestModelAttribute(['required', 'min:1'], 'my_height', 'height')]
     public int $height;
+
+    /**
+     * @var Address[] 
+     */
+    #[NestedModelData(AddressData::class), ValidatedRequestModelAttribute(['required'])]
+    public array $adresses;
+}
+
+#[ForModel(Address::class)]
+class AddressData extends AbstractModelData
+{
+    #[ValidatedRequestModelAttribute(['string'])]
+    public string $street;
 }
 ```
+
+#### Input
+
+```json
+{
+    "name": "John Doe",
+    "age": "25",
+    "projectId": 48615,
+    "my_height": 180,
+    "addresses": [
+        {
+            "street": "Sample Street"
+        }
+    ]
+}
+```
+
+#### Controller
 
 ```php
 use Illuminate\Http\Request;
@@ -55,12 +87,16 @@ class TestController
 {
     public function index(Request $request)
     {
-        $model = MyModelData::fromRequest($request)->toModel()->create();
+        $model = PersonData::fromRequest($request)->toModel()->create();
 
         return $model->id;
     }
 }
 ```
+
+## TODO
+
+- [ ] Allow array validation rules `field.*` & Map into nested DTO
 
 ## Testing
 

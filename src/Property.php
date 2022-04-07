@@ -13,6 +13,7 @@ class Property
         Attributes\RequestAttribute::class,
         Attributes\ValidationRule::class,
         Attributes\ValidatedRequestModelAttribute::class,
+        Attributes\NestedModelData::class,
     ];
 
     private string $name;
@@ -25,6 +26,8 @@ class Property
     private ?string $modelAttribute = null;
 
     private ?string $requestAttribute = null;
+
+    private ?string $nestedClass = null;
 
     public function __construct(ReflectionProperty $reflectionProperty)
     {
@@ -47,6 +50,10 @@ class Property
 
             if ($attributeInstance instanceof Interfaces\RequestAttributeInterface) {
                 $this->requestAttribute = $attributeInstance->getRequestAttribute() ?? $this->name;
+            }
+
+            if ($attributeInstance instanceof Attributes\NestedModelData) {
+                $this->nestedClass = $attributeInstance->getModelDataClass();
             }
         }
     }
@@ -88,5 +95,10 @@ class Property
     public function getRequestAttribute(): ?string
     {
         return $this->requestAttribute;
+    }
+
+    public function getNestedClass(): ?string
+    {
+        return $this->nestedClass;
     }
 }

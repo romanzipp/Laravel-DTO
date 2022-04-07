@@ -39,6 +39,19 @@ abstract class AbstractModelData extends AbstractData
         $validator = Validator::make($validationData, $validationRules);
         $validator->validate();
 
+        // Detected nested items
+
+        foreach ($properties as $property) {
+            if ($nestedClass = $property->getNestedClass()) {
+                $nestedData = [];
+                foreach ($data[$property->getName()] as $datum) {
+                    $nestedData[] = new $nestedClass($datum);
+                }
+
+                $data[$property->getName()] = $nestedData;
+            }
+        }
+
         try {
             parent::__construct($data);
         } catch (InvalidDataException $exception) {
