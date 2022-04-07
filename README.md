@@ -32,12 +32,10 @@ use romanzipp\LaravelDTO\Attributes\ModelAttribute;
 #[ForModel(SampleModel::class)]
 class MyModelData extends AbstractModelData
 {
-    #[RequestAttribute('first_name')]
-    #[ModelAttribute]
-    #[ValidationRule(['required'])]
-    public string $name;
-    
     #[RequestAttribute('first_name'), ModelAttribute, ValidationRule(['required'])]
+    public string $name;
+
+    #[RequestAttribute, ModelAttribute, ValidationRule(['required', 'numeric'])]
     public string $age;
 }
 ```
@@ -49,8 +47,8 @@ class TestController
 {
     public function index(Request $request)
     {
-        $model = MyModelData::fromRequest($request)->makeModel()->create();
-        
+        $model = MyModelData::fromRequest($request)->toModel()->create();
+
         return $model->id;
     }
 }

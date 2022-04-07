@@ -16,7 +16,7 @@ class ModelTest extends TestCase
             public string $name;
         };
 
-        $model = $data->makeModel();
+        $model = $data->toModel();
 
         self::assertInstanceOf(AbstractModelData::class, $data);
         self::assertInstanceOf(SampleModel::class, $model);
@@ -30,7 +30,7 @@ class ModelTest extends TestCase
             public string $name;
         };
 
-        $model = $data->makeModel();
+        $model = $data->toModel();
 
         self::assertInstanceOf(AbstractModelData::class, $data);
         self::assertInstanceOf(SampleModel::class, $model);
@@ -44,7 +44,7 @@ class ModelTest extends TestCase
             public string $name;
         };
 
-        $model = $data->makeModel();
+        $model = $data->toModel();
 
         self::assertInstanceOf(AbstractModelData::class, $data);
         self::assertInstanceOf(SampleModel::class, $model);

@@ -71,7 +71,7 @@ abstract class AbstractModelData extends AbstractData
         return new static($data);
     }
 
-    public function makeModel(): Model
+    public function toModel(): Model
     {
         $modelClass = null;
 

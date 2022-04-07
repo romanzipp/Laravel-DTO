@@ -18,7 +18,7 @@ class TestCombinedAttributes extends TestCase
             Request::create('/', 'POST', ['some_name' => 'Foo'])
         );
 
-        $model = $data->makeModel();
+        $model = $data->toModel();
 
         self::assertInstanceOf(SampleModel::class, $model);
         self::assertSame('Foo', $model->other_name);
