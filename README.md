@@ -19,6 +19,7 @@ Laravel-DTO serves as an **intermediate and reusable layer** between request inp
   - [Populate models](#populate-models)
   - [Populate DTO from request](#populate-dto-from-request-input-data)
   - [**Combined usage**](#combined-usage)
+- [Type casting](#type-casting)
 - [Best practices](#best-practices)
 - [Testing](#testing)
 
@@ -328,6 +329,29 @@ class TestController
 
         return $person->id;
     }
+}
+```
+
+## Type Casting
+
+You can declare custom type cast attributes by simply implementing the [`CastInterface`](src/Attributes/Casts/CastInterface.php) interface and attaching an attribute.
+
+### Built-in Casts
+
+#### [`CastToDate`](src/Attributes/Casts/CastToDate.php)
+
+The [`#[CastToDate]`](src/Attributes/Casts/CastToDate.php) attribute will respect your customly defined date class from `Date::use(...)`. By default it will cast to `Carbon\Carbon`.
+You can also specify a custom date class to be used by passing the date class name as single argument [`#[CastToDate(MyDateClass::class)]`](src/Attributes/Casts/CastToDate.php).
+
+```php
+use Carbon\Carbon;
+use romanzipp\LaravelDTO\AbstractModelData;
+use romanzipp\LaravelDTO\Attributes\Casts\CastToDate;
+
+class PersonData extends AbstractModelData
+{
+    #[CastToDate]
+    public Carbon $date;
 }
 ```
 
