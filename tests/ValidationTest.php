@@ -2,6 +2,7 @@
 
 namespace romanzipp\LaravelDTO\Tests;
 
+use Carbon\Carbon;
 use Illuminate\Validation\ValidationException;
 use romanzipp\DTO\Attributes\Required;
 use romanzipp\LaravelDTO\AbstractModelData;
@@ -51,6 +52,17 @@ class ValidationTest extends TestCase
             #[ValidationRule(['numeric', 'min:18'])]
             public string $age;
         };
+    }
+
+    public function testDate()
+    {
+        $data = new class(['date' => (string) Carbon::now()]) extends AbstractModelData {
+            #[ValidationRule(['date'])]
+            public string $date;
+        };
+
+        self::assertInstanceOf(AbstractModelData::class, $data);
+        self::assertIsString($data->date);
     }
 
     public function testValidationSucceededWithInvalidDataException()

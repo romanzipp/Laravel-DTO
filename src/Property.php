@@ -4,18 +4,11 @@ namespace romanzipp\LaravelDTO;
 
 use ReflectionClass;
 use ReflectionProperty;
+use romanzipp\LaravelDTO\Attributes\Casts\CastInterface;
 use romanzipp\LaravelDTO\Attributes\Interfaces;
 
 class Property
 {
-    private const INTERNAL_ATTRIBUTES = [
-        Attributes\ModelAttribute::class,
-        Attributes\RequestAttribute::class,
-        Attributes\ValidationRule::class,
-        Attributes\ValidatedRequestModelAttribute::class,
-        Attributes\NestedModelData::class,
-    ];
-
     private string $name;
 
     /**
@@ -29,15 +22,13 @@ class Property
 
     private ?string $nestedClass = null;
 
+    private ?CastInterface $cast = null;
+
     public function __construct(ReflectionProperty $reflectionProperty)
     {
         $this->name = $reflectionProperty->getName();
 
         foreach ($reflectionProperty->getAttributes() as $reflectionAttribute) {
-            if ( ! in_array($reflectionAttribute->getName(), self::INTERNAL_ATTRIBUTES)) {
-                continue;
-            }
-
             $attributeInstance = $reflectionAttribute->newInstance();
 
             if ($attributeInstance instanceof Interfaces\ValidationRuleAttributeInterface) {
@@ -54,6 +45,10 @@ class Property
 
             if ($attributeInstance instanceof Attributes\NestedModelData) {
                 $this->nestedClass = $attributeInstance->getModelDataClass();
+            }
+
+            if ($attributeInstance instanceof CastInterface) {
+                $this->cast = $attributeInstance;
             }
         }
     }
@@ -105,5 +100,15 @@ class Property
     public function getValidatorKeyName(): string
     {
         return $this->requestAttribute ?? $this->name;
+    }
+
+    public function hasCast(): bool
+    {
+        return null !== $this->cast;
+    }
+
+    public function getCastedType(mixed $value): mixed
+    {
+        return $this->cast->castToType($value);
     }
 }
