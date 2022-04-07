@@ -48,7 +48,7 @@ class PersonData extends AbstractModelData
     public int $height;
 
     /**
-     * @var Address[] 
+     * @var AddressData[] 
      */
     #[NestedModelData(AddressData::class), ValidatedRequestModelAttribute(['required'])]
     public array $adresses;
