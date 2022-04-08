@@ -51,24 +51,37 @@ class ModelTest extends TestCase
         self::assertNull($model->name);
     }
 
-    public function testExistingModelAtteribute()
+    public function testExistingModelAttribute()
     {
         $model = new SampleModel([
-            'name' => 'Foo',
-            'age' => 18,
+            'first' => 'Foo',
+            'second' => 18,
         ]);
 
-        self::assertSame('Foo', $model->name);
-        self::assertSame(18, $model->age);
+        self::assertSame('Foo', $model->first);
+        self::assertSame(18, $model->second);
+        self::assertArrayNotHasKey('third', $model->getAttributes());
 
-        $data = new #[ForModel(SampleModel::class)] class(['name' => 'Bar']) extends AbstractModelData {
-            #[ModelAttribute('name')]
-            public string $name;
+        $data = new #[ForModel(SampleModel::class)] class(['first' => 'Bar', 'third' => null]) extends AbstractModelData {
+            #[ModelAttribute]
+            public string $first;
+
+            #[ModelAttribute]
+            public ?string $third;
+
+            #[ModelAttribute]
+            public ?string $fourth;
+
+            public ?string $fifth;
         };
 
         $model = $data->toModel($model);
 
-        self::assertSame('Bar', $model->name);
-        self::assertSame(18, $model->age);
+        self::assertSame('Bar', $model->first);
+        self::assertSame(18, $model->second);
+
+        self::assertArrayHasKey('third', $model->getAttributes());
+        self::assertArrayNotHasKey('fourth', $model->getAttributes());
+        self::assertArrayNotHasKey('fifth', $model->getAttributes());
     }
 }
