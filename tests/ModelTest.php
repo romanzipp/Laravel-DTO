@@ -50,4 +50,25 @@ class ModelTest extends TestCase
         self::assertInstanceOf(SampleModel::class, $model);
         self::assertNull($model->name);
     }
+
+    public function testExistingModelAtteribute()
+    {
+        $model = new SampleModel([
+            'name' => 'Foo',
+            'age' => 18,
+        ]);
+
+        self::assertSame('Foo', $model->name);
+        self::assertSame(18, $model->age);
+
+        $data = new #[ForModel(SampleModel::class)] class(['name' => 'Bar']) extends AbstractModelData {
+            #[ModelAttribute('name')]
+            public string $name;
+        };
+
+        $model = $data->toModel($model);
+
+        self::assertSame('Bar', $model->name);
+        self::assertSame(18, $model->age);
+    }
 }
