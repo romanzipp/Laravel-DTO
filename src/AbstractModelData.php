@@ -124,7 +124,7 @@ abstract class AbstractModelData extends AbstractData
      *
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function toModel(): Model
+    public function toModel(Model $model = null): Model
     {
         $modelClass = null;
 
@@ -153,7 +153,13 @@ abstract class AbstractModelData extends AbstractData
             $attributes[$modelAttribute] = $this->{$property->getName()};
         }
 
-        /** @var \Illuminate\Database\Eloquent\Model $modelClass */
-        return new $modelClass($attributes);
+        if (null === $model) {
+            /** @var \Illuminate\Database\Eloquent\Model $modelClass */
+            $model = new $modelClass();
+        }
+
+        $model->fill($attributes);
+
+        return $model;
     }
 }
