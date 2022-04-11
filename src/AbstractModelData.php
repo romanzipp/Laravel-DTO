@@ -16,6 +16,8 @@ abstract class AbstractModelData extends AbstractData
 {
     private const FLAG_IS_REQUEST_DATA = '__is_request_data';
 
+    private const NESTED_PARENT_KEY = '__nested_parent_key';
+
     /**
      * @param array<string, mixed> $data
      *
@@ -24,11 +26,21 @@ abstract class AbstractModelData extends AbstractData
     public function __construct(array $data = [])
     {
         $properties = Property::collectFromClass(static::class);
+        $nestedParentKey = null;
+
+        if (isset($data[self::NESTED_PARENT_KEY])) {
+            $nestedParentKey = $data[self::NESTED_PARENT_KEY];
+            unset($data[self::NESTED_PARENT_KEY]);
+        }
 
         $validationRules = [];
         $validationData = [];
 
         foreach ($properties as $property) {
+            if (isset($nestedParentKey)) {
+                $property->setNestedParentKey($nestedParentKey);
+            }
+
             if ( ! empty($rules = $property->getValidationRules())) {
                 $validationRules[$property->getValidatorKeyName()] = $rules;
             }
@@ -43,7 +55,18 @@ abstract class AbstractModelData extends AbstractData
         }
 
         $validator = Validator::make($validationData, $validationRules);
-        $validator->validate();
+        if ( ! $validator->passes()) {
+            $messages = $validator->getMessageBag()->getMessages();
+
+            if (isset($nestedParentKey)) {
+                foreach ($messages as $key => $messageLines) {
+                    $messages["$nestedParentKey.$key"] = $messageLines;
+                    unset($messages[$key]);
+                }
+            }
+
+            throw ValidationException::withMessages($messages);
+        }
 
         // Detected nested items
 
@@ -51,6 +74,8 @@ abstract class AbstractModelData extends AbstractData
             if ($nestedClass = $property->getNestedClass()) {
                 $nestedData = [];
                 foreach ($data[$property->getName()] as $datum) {
+                    $datum[self::NESTED_PARENT_KEY] = $property->getName();
+
                     /**
                      * @var $nestedClass \romanzipp\LaravelDTO\AbstractModelData
                      */
@@ -67,14 +92,16 @@ abstract class AbstractModelData extends AbstractData
         }
 
         unset($data[self::FLAG_IS_REQUEST_DATA]);
+        unset($data[self::NESTED_PARENT_KEY]);
 
         try {
             parent::__construct($data);
         } catch (InvalidDataException $exception) {
             $messages = [];
 
+            dd($properties);
             foreach ($exception->getProperties() as $property) {
-                $messages[$property->getName()] = "The {$property->getName()} field is invalid.";
+                $messages[$property->getValidatorName()] = "The {$property->getValidatorName()} field is invalid.";
             }
 
             throw ValidationException::withMessages($messages);
