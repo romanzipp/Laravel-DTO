@@ -50,6 +50,11 @@ abstract class AbstractModelData extends AbstractData
         foreach ($properties as $property) {
             if ($nestedClass = $property->getNestedClass()) {
                 $nestedData = [];
+
+                if ( ! isset($data[$property->getName()])) {
+                    continue;
+                }
+
                 foreach ($data[$property->getName()] as $datum) {
                     /**
                      * @var $nestedClass \romanzipp\LaravelDTO\AbstractModelData
