@@ -1,11 +1,11 @@
 <?php
 
-namespace romanzipp\LaravelDTO\Tests;
+namespace romanzipp\LaravelDTO\Tests\Model;
 
 use romanzipp\LaravelDTO\AbstractModelData;
 use romanzipp\LaravelDTO\Attributes\ForModel;
 use romanzipp\LaravelDTO\Attributes\ModelAttribute;
-use romanzipp\LaravelDTO\Tests\Support\SampleModel;
+use romanzipp\LaravelDTO\Tests\TestCase;
 
 class ModelTest extends TestCase
 {
@@ -83,5 +83,25 @@ class ModelTest extends TestCase
         self::assertArrayHasKey('third', $model->getAttributes());
         self::assertArrayNotHasKey('fourth', $model->getAttributes());
         self::assertArrayNotHasKey('fifth', $model->getAttributes());
+    }
+
+    public function testModelNotOverwrittenWithDefaultDataProperties()
+    {
+        $model = new SampleModel([
+            'first' => 'Foo',
+            'hasKoeder' => true,
+        ]);
+
+        $data = new #[ForModel(SampleModel::class)] class(['first' => 'Bar']) extends AbstractModelData {
+            #[ModelAttribute]
+            public string $first;
+
+            #[ModelAttribute]
+            public bool $hasKoeder = false;
+        };
+
+        $model = $data->toModel($model);
+
+        self::assertSame(true, $model->hasKoeder);
     }
 }

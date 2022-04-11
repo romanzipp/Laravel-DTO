@@ -14,6 +14,11 @@ use RuntimeException;
 
 abstract class AbstractModelData extends AbstractData
 {
+    /**
+     * @var string[]
+     */
+    private array $__originalData;
+
     private const FLAG_IS_REQUEST_DATA = '__is_request_data';
 
     /**
@@ -24,6 +29,8 @@ abstract class AbstractModelData extends AbstractData
     public function __construct(array $data = [])
     {
         $properties = Property::collectFromClass(static::class);
+
+        $this->__originalData = $data;
 
         $validationRules = [];
         $validationData = [];
@@ -152,6 +159,10 @@ abstract class AbstractModelData extends AbstractData
             $modelAttribute = $property->getModelAttribute();
 
             if (null === $modelAttribute || ! $this->isset($property->getName())) {
+                continue;
+            }
+
+            if (null !== $model && ! in_array($property->getName(), array_keys($this->__originalData))) {
                 continue;
             }
 

@@ -9,7 +9,7 @@ use romanzipp\LaravelDTO\Attributes\ModelAttribute;
 use romanzipp\LaravelDTO\Attributes\RequestAttribute;
 use romanzipp\LaravelDTO\Attributes\ValidatedRequestModelAttribute;
 use romanzipp\LaravelDTO\Attributes\ValidationRule;
-use romanzipp\LaravelDTO\Tests\Support\SampleModel;
+use romanzipp\LaravelDTO\Tests\Model\SampleModel;
 
 class CombinedAttributesTest extends TestCase
 {

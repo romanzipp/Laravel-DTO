@@ -118,13 +118,15 @@ $person = $data->toModel()->save();
 }
 ```
 
-_Note: You can also pass an existing model to the `toModel()` method._
+**Note**: You can also pass an existing model to the `toModel()` method.
 
 ```php
 use App\Models\Person;
 
 $person = $data->toModel($person)->save();
 ```
+
+**Note**: When passing **no** existing model to the `toModel()` method, default values declared in the DTO will be populated. If a model is passed as argument `toModel($model)` default values will not override existing model attributes.
 
 ### Populate DTO from request input data
 
