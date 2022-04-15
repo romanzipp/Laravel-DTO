@@ -21,6 +21,8 @@ abstract class AbstractModelData extends AbstractData
 
     private const FLAG_IS_REQUEST_DATA = '__is_request_data';
 
+    private const FLAG_SKIP_VALIDATION = '__skip_validation';
+
     /**
      * @param array<string, mixed> $data
      *
@@ -50,7 +52,10 @@ abstract class AbstractModelData extends AbstractData
         }
 
         $validator = Validator::make($validationData, $validationRules);
-        $validator->validate();
+
+        if ( ! isset($data[self::FLAG_SKIP_VALIDATION])) {
+            $validator->validate();
+        }
 
         // Detected nested items
 
@@ -79,6 +84,7 @@ abstract class AbstractModelData extends AbstractData
         }
 
         unset($data[self::FLAG_IS_REQUEST_DATA]);
+        unset($data[self::FLAG_SKIP_VALIDATION]);
 
         try {
             parent::__construct($data);
@@ -105,6 +111,38 @@ abstract class AbstractModelData extends AbstractData
     public static function fromRequest(Request $request): static
     {
         return self::fromRequestData($request->input());
+    }
+
+    /**
+     * Create DTO instance from existing model.
+     *
+     * @param \Illuminate\Database\Eloquent\Model $model
+     *
+     * @return static
+     */
+    public static function fromModel(Model $model): static
+    {
+        $modelAttribute = self::getModelAttribute();
+
+        if (null === $modelAttribute) {
+            throw new RuntimeException('No model defined for DTO');
+        }
+
+        $data = [];
+
+        foreach (Property::collectFromClass(static::class) as $property) {
+            $modelAttribute = $property->getModelAttribute();
+
+            if (null === $modelAttribute) {
+                continue;
+            }
+
+            $data[$property->getName()] = $model->{$modelAttribute};
+        }
+
+        $data[self::FLAG_SKIP_VALIDATION] = true;
+
+        return new static($data);
     }
 
     /**
@@ -140,13 +178,8 @@ abstract class AbstractModelData extends AbstractData
     {
         $modelClass = null;
 
-        $reflectionClass = new ReflectionClass(static::class);
-
-        foreach ($reflectionClass->getAttributes(ForModel::class) as $attribute) {
-            /** @var \romanzipp\LaravelDTO\Attributes\ForModel $attributeInstance */
-            $attributeInstance = $attribute->newInstance();
-            $modelClass = $attributeInstance->model;
-            break;
+        if ($attribute = self::getModelAttribute()) {
+            $modelClass = $attribute->model;
         }
 
         if (null === $modelClass) {
@@ -177,5 +210,16 @@ abstract class AbstractModelData extends AbstractData
         $model->fill($attributes);
 
         return $model;
+    }
+
+    private static function getModelAttribute(): ?ForModel
+    {
+        $reflectionClass = new ReflectionClass(static::class);
+
+        foreach ($reflectionClass->getAttributes(ForModel::class) as $attribute) {
+            return $attribute->newInstance();
+        }
+
+        return null;
     }
 }
