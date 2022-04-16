@@ -399,8 +399,10 @@ class PersonData extends AbstractModelData
 ## TODO
 
 - [x] Allow array validation rules `field.*` & Map into nested DTO
-- [ ] Add correct validation exception error messages from nested fields
-- [ ] Pass existing model to `toModel()` method
+- [x] Add correct validation exception error messages from nested fields
+- [x] Pass existing model to `toModel()` method
+- [x] Create DTO from existing model
+- [ ] Only run validation rules if data provided from request
 
 ## Testing
 
