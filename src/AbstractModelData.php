@@ -150,7 +150,7 @@ abstract class AbstractModelData extends AbstractData
      *
      * @return static
      */
-    protected static function fromRequestData(array $payload): static
+    public static function fromRequestData(array $payload): static
     {
         $data = [];
 
