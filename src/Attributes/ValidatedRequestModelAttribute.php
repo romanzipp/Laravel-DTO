@@ -8,7 +8,7 @@ use romanzipp\LaravelDTO\Attributes\Interfaces\ModelAttributeInterface;
 use romanzipp\LaravelDTO\Attributes\Interfaces\RequestAttributeInterface;
 use romanzipp\LaravelDTO\Attributes\Interfaces\ValidationRuleAttributeInterface;
 
-#[Attribute]
+#[\Attribute]
 class ValidatedRequestModelAttribute implements DataAttributeInterface, ValidationRuleAttributeInterface, RequestAttributeInterface, ModelAttributeInterface
 {
     /**

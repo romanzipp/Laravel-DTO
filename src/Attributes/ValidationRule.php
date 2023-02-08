@@ -6,7 +6,7 @@ use Attribute;
 use romanzipp\LaravelDTO\Attributes\Interfaces\DataAttributeInterface;
 use romanzipp\LaravelDTO\Attributes\Interfaces\ValidationRuleAttributeInterface;
 
-#[Attribute]
+#[\Attribute]
 class ValidationRule implements DataAttributeInterface, ValidationRuleAttributeInterface
 {
     /**

@@ -4,7 +4,7 @@ namespace romanzipp\LaravelDTO\Attributes;
 
 use Attribute;
 
-#[Attribute]
+#[\Attribute]
 class ForModel
 {
     public function __construct(

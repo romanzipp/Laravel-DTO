@@ -2,9 +2,9 @@
 
 namespace romanzipp\LaravelDTO;
 
-use ReflectionClass;
-use ReflectionProperty;
 use romanzipp\LaravelDTO\Attributes\Casts\CastInterface;
+use romanzipp\LaravelDTO\Attributes\Conversions\ConversionInterface;
+use romanzipp\LaravelDTO\Attributes\Conversions\ConvertsFromEnum;
 use romanzipp\LaravelDTO\Attributes\Interfaces;
 
 class Property
@@ -24,7 +24,9 @@ class Property
 
     private ?CastInterface $cast = null;
 
-    public function __construct(ReflectionProperty $reflectionProperty)
+    private ?ConversionInterface $conversion = null;
+
+    public function __construct(\ReflectionProperty $reflectionProperty)
     {
         $this->name = $reflectionProperty->getName();
 
@@ -50,6 +52,10 @@ class Property
             if ($attributeInstance instanceof CastInterface) {
                 $this->cast = $attributeInstance;
             }
+
+            if ($attributeInstance instanceof ConversionInterface) {
+                $this->conversion = $attributeInstance;
+            }
         }
     }
 
@@ -60,7 +66,7 @@ class Property
     {
         $properties = [];
 
-        $reflectionClass = new ReflectionClass($class);
+        $reflectionClass = new \ReflectionClass($class);
 
         foreach ($reflectionClass->getProperties() as $reflectionProperty) {
             $properties[] = new self($reflectionProperty);
@@ -110,5 +116,18 @@ class Property
     public function getCastedType(mixed $value): mixed
     {
         return $this->cast->castToType($value);
+    }
+
+    public function getConvertedValue(mixed $value): mixed
+    {
+        if ($value instanceof \BackedEnum) {
+            $this->conversion = $this->conversion ?? new ConvertsFromEnum();
+        }
+
+        if (null === $this->conversion) {
+            return $value;
+        }
+
+        return $this->conversion->convert($value);
     }
 }

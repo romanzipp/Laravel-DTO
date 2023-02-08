@@ -6,11 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use ReflectionClass;
 use romanzipp\DTO\AbstractData;
 use romanzipp\DTO\Exceptions\InvalidDataException;
 use romanzipp\LaravelDTO\Attributes\ForModel;
-use RuntimeException;
 
 abstract class AbstractModelData extends AbstractData
 {
@@ -125,7 +123,7 @@ abstract class AbstractModelData extends AbstractData
         $modelAttribute = self::getModelAttribute();
 
         if (null === $modelAttribute) {
-            throw new RuntimeException('No model defined for DTO');
+            throw new \RuntimeException('No model defined for DTO');
         }
 
         $data = [];
@@ -183,7 +181,7 @@ abstract class AbstractModelData extends AbstractData
         }
 
         if (null === $modelClass) {
-            throw new RuntimeException('No model defined for DTO');
+            throw new \RuntimeException('No model defined for DTO');
         }
 
         $attributes = [];
@@ -191,6 +189,7 @@ abstract class AbstractModelData extends AbstractData
         foreach (Property::collectFromClass(static::class) as $property) {
             $modelAttribute = $property->getModelAttribute();
 
+            // There was no attribute set to cast to a model value or the value is missing
             if (null === $modelAttribute || ! $this->isset($property->getName())) {
                 continue;
             }
@@ -199,7 +198,11 @@ abstract class AbstractModelData extends AbstractData
                 continue;
             }
 
-            $attributes[$modelAttribute] = $this->{$property->getName()};
+            $value = $property->getConvertedValue(
+                $this->{$property->getName()}
+            );
+
+            $attributes[$modelAttribute] = $value;
         }
 
         if (null === $model) {
@@ -214,7 +217,7 @@ abstract class AbstractModelData extends AbstractData
 
     private static function getModelAttribute(): ?ForModel
     {
-        $reflectionClass = new ReflectionClass(static::class);
+        $reflectionClass = new \ReflectionClass(static::class);
 
         foreach ($reflectionClass->getAttributes(ForModel::class) as $attribute) {
             return $attribute->newInstance();

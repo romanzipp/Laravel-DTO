@@ -4,7 +4,7 @@ namespace romanzipp\LaravelDTO\Attributes\Casts;
 
 use Attribute;
 
-#[Attribute]
+#[\Attribute]
 class CastToDate implements CastInterface
 {
     public function __construct(
