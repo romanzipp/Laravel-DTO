@@ -7,13 +7,12 @@ use romanzipp\LaravelDTO\Attributes\ForModel;
 use romanzipp\LaravelDTO\Attributes\ModelAttribute;
 use romanzipp\LaravelDTO\Attributes\ValidationRule;
 use romanzipp\LaravelDTO\Tests\TestCase;
-use RuntimeException;
 
 class CreateFromModelTest extends TestCase
 {
     public function testCanNotCreateFromModelIfMissingForModelAttribute()
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(\RuntimeException::class);
 
         $model = new SampleModel([]);
 

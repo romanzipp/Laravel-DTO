@@ -6,7 +6,7 @@ use Attribute;
 use romanzipp\LaravelDTO\Attributes\Interfaces\DataAttributeInterface;
 use romanzipp\LaravelDTO\Attributes\Interfaces\RequestAttributeInterface;
 
-#[Attribute]
+#[\Attribute]
 class RequestAttribute implements DataAttributeInterface, RequestAttributeInterface
 {
     public function __construct(

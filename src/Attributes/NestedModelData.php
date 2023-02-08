@@ -4,7 +4,7 @@ namespace romanzipp\LaravelDTO\Attributes;
 
 use Attribute;
 
-#[Attribute]
+#[\Attribute]
 class NestedModelData
 {
     public function __construct(

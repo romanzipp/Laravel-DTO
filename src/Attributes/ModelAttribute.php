@@ -6,7 +6,7 @@ use Attribute;
 use romanzipp\LaravelDTO\Attributes\Interfaces\DataAttributeInterface;
 use romanzipp\LaravelDTO\Attributes\Interfaces\ModelAttributeInterface;
 
-#[Attribute]
+#[\Attribute]
 class ModelAttribute implements DataAttributeInterface, ModelAttributeInterface
 {
     public function __construct(
