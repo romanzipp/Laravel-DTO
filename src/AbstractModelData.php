@@ -201,15 +201,15 @@ abstract class AbstractModelData extends AbstractData
                 continue;
             }
 
-            // Don't overwrite model attributes with default values.
-            // We track if a value has been set intially or altered (via __set)
-            if (null !== $model && ! in_array($property->getName(), array_keys($this->__originalData))) {
-                continue;
-            }
-
             $value = $property->getConvertedValue(
                 $this->{$property->getName()}
             );
+
+            // Don't overwrite model attributes with default values.
+            // We track if a value has been set intially or altered (via __set)
+            if (null !== $model && $property->hasDefaultValue() && $property->getDefaultValue() === $value) {
+                continue;
+            }
 
             $attributes[$modelAttribute] = $value;
         }

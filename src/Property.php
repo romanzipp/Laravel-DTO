@@ -22,6 +22,10 @@ class Property
 
     private ?string $nestedClass = null;
 
+    private bool $hasDefaultValue;
+
+    private mixed $defaultValue;
+
     private ?CastInterface $cast = null;
 
     private ?ConversionInterface $conversion = null;
@@ -29,6 +33,11 @@ class Property
     public function __construct(\ReflectionProperty $reflectionProperty)
     {
         $this->name = $reflectionProperty->getName();
+        $this->hasDefaultValue = $reflectionProperty->hasDefaultValue();
+
+        if ($this->hasDefaultValue) {
+            $this->defaultValue = $reflectionProperty->getDefaultValue();
+        }
 
         foreach ($reflectionProperty->getAttributes() as $reflectionAttribute) {
             $attributeInstance = $reflectionAttribute->newInstance();
@@ -129,5 +138,15 @@ class Property
         }
 
         return $this->conversion->convert($value);
+    }
+
+    public function hasDefaultValue(): bool
+    {
+        return $this->hasDefaultValue;
+    }
+
+    public function getDefaultValue(): mixed
+    {
+        return $this->defaultValue;
     }
 }

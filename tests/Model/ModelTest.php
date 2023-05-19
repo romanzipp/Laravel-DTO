@@ -107,12 +107,12 @@ class ModelTest extends TestCase
 
     public function testModelDataAddedAfterInstanziationWithNullModel()
     {
-        $data = new #[ForModel(SampleModel::class)] class(['stringValue' => 'Foo', 'intValue' => 0]) extends AbstractModelData {
+        $data = new #[ForModel(SampleModel::class)] class() extends AbstractModelData {
             #[ModelAttribute]
-            public string $stringValue;
+            public string $stringValue = 'Foo';
 
             #[ModelAttribute]
-            public int $intValue;
+            public int $intValue = 0;
         };
 
         $data->stringValue = 'Bar';
@@ -128,12 +128,12 @@ class ModelTest extends TestCase
     {
         $model = new SampleModel();
 
-        $data = new #[ForModel(SampleModel::class)] class(['stringValue' => 'Foo', 'intValue' => 0]) extends AbstractModelData {
+        $data = new #[ForModel(SampleModel::class)] class() extends AbstractModelData {
             #[ModelAttribute]
-            public string $stringValue;
+            public string $stringValue = 'Foo';
 
             #[ModelAttribute]
-            public int $intValue;
+            public int $intValue = 0;
         };
 
         $data->stringValue = 'Bar';
