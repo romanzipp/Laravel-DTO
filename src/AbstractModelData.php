@@ -97,7 +97,7 @@ abstract class AbstractModelData extends AbstractData
         }
     }
 
-    public function __set(string $name, $value): void
+    public function __set(string $name, mixed $value): void
     {
         $this->__originalData[$name] = $value;
     }

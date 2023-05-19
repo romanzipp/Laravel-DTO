@@ -105,6 +105,25 @@ class ModelTest extends TestCase
         self::assertSame(true, $model->hasKoeder);
     }
 
+    public function testModelDataAddedAfterInstanziationWithNullModel()
+    {
+        $data = new #[ForModel(SampleModel::class)] class(['stringValue' => 'Foo', 'intValue' => 0]) extends AbstractModelData {
+            #[ModelAttribute]
+            public string $stringValue;
+
+            #[ModelAttribute]
+            public int $intValue;
+        };
+
+        $data->stringValue = 'Bar';
+        $data->intValue = 1;
+
+        $model = $data->toModel();
+
+        self::assertSame('Bar', $model->stringValue);
+        self::assertSame(1, $model->intValue);
+    }
+
     public function testModelDataAddedAfterInstanziation()
     {
         $model = new SampleModel();
