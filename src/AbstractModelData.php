@@ -97,6 +97,11 @@ abstract class AbstractModelData extends AbstractData
         }
     }
 
+    public function __set(string $name, $value): void
+    {
+        $this->__originalData[$name] = $value;
+    }
+
     /**
      * Take request input and fill into DTO base on the #[RequestAttribute].
      *
@@ -170,6 +175,8 @@ abstract class AbstractModelData extends AbstractData
     /**
      * Fill properties marked with #[ModelAttribute] to new model instanced declared in #[ForModel].
      *
+     * @param \Illuminate\Database\Eloquent\Model|null $model
+     *
      * @return \Illuminate\Database\Eloquent\Model
      */
     public function toModel(Model $model = null): Model
@@ -194,6 +201,8 @@ abstract class AbstractModelData extends AbstractData
                 continue;
             }
 
+            // Don't overwrite model attributes with default values.
+            // We track if a value has been set intially or altered (via __set)
             if (null !== $model && ! in_array($property->getName(), array_keys($this->__originalData))) {
                 continue;
             }
