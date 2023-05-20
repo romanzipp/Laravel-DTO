@@ -12,11 +12,6 @@ use romanzipp\LaravelDTO\Attributes\ForModel;
 
 abstract class AbstractModelData extends AbstractData
 {
-    /**
-     * @var string[]
-     */
-    private array $__originalData;
-
     private const FLAG_IS_REQUEST_DATA = '__is_request_data';
 
     private const FLAG_SKIP_VALIDATION = '__skip_validation';
@@ -29,8 +24,6 @@ abstract class AbstractModelData extends AbstractData
     public function __construct(array $data = [])
     {
         $properties = Property::collectFromClass(static::class);
-
-        $this->__originalData = $data;
 
         $validationRules = [];
         $validationData = [];
@@ -95,11 +88,6 @@ abstract class AbstractModelData extends AbstractData
 
             throw ValidationException::withMessages($messages);
         }
-    }
-
-    public function __set(string $name, mixed $value): void
-    {
-        $this->__originalData[$name] = $value;
     }
 
     /**
