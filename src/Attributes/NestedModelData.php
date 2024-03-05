@@ -2,8 +2,6 @@
 
 namespace romanzipp\LaravelDTO\Attributes;
 
-use Attribute;
-
 #[\Attribute]
 class NestedModelData
 {
