@@ -16,11 +16,12 @@ Laravel-DTO serves as an **intermediate and reusable layer** between request inp
 - [Installation](#installation)
 - [Usage](#usage)
   - [Validation](#validation)
-  - [Populate models](#populate-models)
-  - [Populate DTO from request](#populate-dto-from-request-input-data)
+  - [Hydrate models](#hydrate-models)
   - [**Combined usage**](#combined-usage)
-- [Type casting](#type-casting)
-- [Best practices](#best-practices)
+  - [Validate arrays](#validate-arrays)
+  - [Type casting: Arrays to DTOs](#cast-arrays-to-dtos-nested-data)
+  - [Type casting](#type-casting)
+  - [IDE Support](#ide-support)
 - [Testing](#testing)
 
 ## Installation
@@ -80,7 +81,7 @@ $data = new PersonData([
 ]);
 ```
 
-## Populate Models
+## Hydrate Models
 
 You can attach a model to any DTO using the [`#[ForModel(Model::class)]`](src/Attributes/ForModel.php) attribute.
 To associate DTO properties with Model attributes, you need to attach the [`#[ModelAttribute()]`](src/Attributes/ModelAttribute.php) attribute to each property.
@@ -259,7 +260,7 @@ If you only want to validate an array without casting the children items to anot
 
 The first parameter to the `ValidationChildrenRule` attribute is the validation rule for the children items. The second parameter is the validator path to access the children key to validate.
 
-### Validate a simple array with numeric indexes
+#### Validate a simple array with numeric indexes
 
 ```php
 use romanzipp\LaravelDTO\AbstractModelData;
@@ -279,7 +280,7 @@ class PersonData extends AbstractModelData
 }
 ```
 
-### Validate associative arrays with named keys
+#### Validate associative arrays with named keys
 
 ```php
 use romanzipp\LaravelDTO\AbstractModelData;
@@ -299,7 +300,7 @@ class PersonData extends AbstractModelData
 }
 ```
 
-### Multiple validation rules
+#### Multiple validation rules
 
 ```php
 use romanzipp\LaravelDTO\AbstractModelData;
@@ -322,7 +323,7 @@ class PersonData extends AbstractModelData
 }
 ```
 
-## Nested data
+## Cast arrays to DTOs (Nested data)
 
 In some cases you also want to create realted models with a single HTTP call. In this case you can make use of the [`#[NestedModelData(NestedData::class)]`](src/Attributes/NestedModelData.php) which will populate the DTO property with n instances of the defined DTO. 
 
@@ -452,7 +453,7 @@ class MyCast implements CastInterface
 }
 ```
 
-## Best practices
+## IDE Support
 
 Make sure to add a `@method` PHPDoc comment like shown below to allow IDE and static analyzer support when calling the `toModel()` method.
 
@@ -472,14 +473,6 @@ class PersonData extends AbstractModelData
     public string $name;
 }
 ```
-
-## TODO
-
-- [x] Allow array validation rules `field.*` & Map into nested DTO
-- [x] Add correct validation exception error messages from nested fields
-- [x] Pass existing model to `toModel()` method
-- [x] Create DTO from existing model
-- [ ] Only run validation rules if data provided from request
 
 ## Testing
 
