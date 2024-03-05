@@ -18,6 +18,9 @@ class Property
 
     private string $childrenValidationAccessor = '*';
 
+    /**
+     * @var mixed[]
+     */
     private array $childrenValidationRules = [];
 
     private ?string $modelAttribute = null;
@@ -111,6 +114,9 @@ class Property
         return $this->childrenValidationAccessor;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function getChildrenValidationRules(): array
     {
         return $this->childrenValidationRules;
