@@ -44,6 +44,7 @@ use Illuminate\Validation\Rules\Exists;
 use romanzipp\LaravelDTO\AbstractModelData;
 use romanzipp\LaravelDTO\Attributes\ForModel;
 use romanzipp\LaravelDTO\Attributes\ValidationRule;
+use romanzipp\LaravelDTO\Attributes\ValidationChildrenRule;
 
 class PersonData extends AbstractModelData
 {
@@ -58,6 +59,9 @@ class PersonData extends AbstractModelData
 
     #[ValidationRule(['required', 'numeric', new Exists(Project::class, 'id')])]
     public int $projectId;
+    
+    #[ValidationRule(['required', 'array', 'min:1']), ValidationChildrenRule(['string'], '*.device'), ValidationChildrenRule(['ipv4'], '*.ip')]
+    public array $logins;
 }
 ```
 
@@ -69,6 +73,10 @@ $data = new PersonData([
     'currentAge' => 25,
     'language' => 'de',
     'projectId' => 2,
+    'logins' => [
+        ['device' => 'PC', 'ip' => '85.120.61.36'],
+        ['device' => 'iOS', 'ip' => '85.120.61.36'],
+    ]
 ]);
 ```
 
@@ -242,6 +250,75 @@ class TestController
 
         return $person->id;
     }
+}
+```
+
+### Validate arrays
+
+If you only want to validate an array without casting the children items to another DTO, you can make use of the `ValidationChildrenRule` attribute.
+
+The first parameter to the `ValidationChildrenRule` attribute is the validation rule for the children items. The second parameter is the validator path to access the children key to validate.
+
+#### Validate a simple array with numeric indexes
+
+```php
+use romanzipp\LaravelDTO\AbstractModelData;
+use romanzipp\LaravelDTO\Attributes\ValidationChildrenRule;
+
+$data = [
+    'logins' => [
+        '127.0.0.1',
+        '127.0.0.1'
+    ]
+];
+
+class PersonData extends AbstractModelData
+{
+    #[ValidationChildrenRule(['string', 'ipv4'], '*')];
+    public array $logins;
+}
+```
+
+#### Validate associative arrays with named keys
+
+```php
+use romanzipp\LaravelDTO\AbstractModelData;
+use romanzipp\LaravelDTO\Attributes\ValidationChildrenRule;
+
+$data = [
+    'logins' => [
+        ['ip' => '127.0.0.1'],
+        ['ip' => '127.0.0.1']
+    ]
+];
+
+class PersonData extends AbstractModelData
+{
+    #[ValidationChildrenRule(['string', 'ipv4'], '*.ip')];
+    public array $logins;
+}
+```
+
+#### Multiple validation rules
+
+```php
+use romanzipp\LaravelDTO\AbstractModelData;
+use romanzipp\LaravelDTO\Attributes\ValidationChildrenRule;
+
+$data = [
+    'logins' => [
+        ['ip' => '127.0.0.1', 'device' => 'iOS'],
+        ['ip' => '127.0.0.1', 'device' => 'macOS']
+    ]
+];
+
+class PersonData extends AbstractModelData
+{
+    #[
+        ValidationChildrenRule(['string', 'ipv4'], '*.ip'),
+        ValidationChildrenRule(['string'], '*.device')
+    ];
+    public array $logins;
 }
 ```
 

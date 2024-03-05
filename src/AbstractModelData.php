@@ -25,12 +25,17 @@ abstract class AbstractModelData extends AbstractData
     {
         $properties = Property::collectFromClass(static::class);
 
+
         $validationRules = [];
         $validationData = [];
 
         foreach ($properties as $property) {
             if ( ! empty($rules = $property->getValidationRules())) {
                 $validationRules[$property->getValidatorKeyName()] = $rules;
+            }
+
+            if ( ! empty($childrenRules = $property->getChildrenValidationRules())) {
+                $validationRules[$property->getValidatorChildrenKeyName()] = $childrenRules;
             }
 
             if (array_key_exists($property->getName(), $data)) {
