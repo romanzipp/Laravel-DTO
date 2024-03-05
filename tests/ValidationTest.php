@@ -7,6 +7,7 @@ use Illuminate\Validation\ValidationException;
 use romanzipp\DTO\Attributes\Required;
 use romanzipp\LaravelDTO\AbstractModelData;
 use romanzipp\LaravelDTO\Attributes\NestedModelData;
+use romanzipp\LaravelDTO\Attributes\ValidationChildrenRule;
 use romanzipp\LaravelDTO\Attributes\ValidationRule;
 
 class ValidationTest extends TestCase
@@ -163,6 +164,48 @@ class ValidationTest extends TestCase
              * @var \romanzipp\LaravelDTO\Tests\ValidationNestedItem[]
              */
             #[NestedModelData(ValidationNestedItem::class), ValidationRule(['required', 'array'])]
+            public array $items;
+        };
+    }
+
+    public function testValidationArrayKeysWithoutNested()
+    {
+        // $request->validate([
+        //   'items' => ['required', 'array', 'min:1'],
+        //   'items.*' => ['required', 'string'],
+        // ]);
+        //
+        // ['items' => [1, 2, 3]]
+
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('The items.0 must be at least 100.');
+
+        new class(['items' => [99]]) extends AbstractModelData {
+            /**
+             * @var \romanzipp\LaravelDTO\Tests\ValidationNestedItem[]
+             */
+            #[ValidationRule(['required', 'array']), ValidationChildrenRule(['integer', 'min:100', 'max:200'], '*')]
+            public array $items;
+        };
+    }
+
+    public function testValidationArrayKeysWithoutNestedAssociative()
+    {
+        // $request->validate([
+        //   'items' => ['required', 'array', 'min:1'],
+        //   'items.*.name' => ['required', 'string'],
+        // ]);
+        //
+        // ['items' => [ ['name' => 'foobar'] ]]
+
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('The items.0.name must be at least 100.');
+
+        new class(['items' => [['name' => 99]]]) extends AbstractModelData {
+            /**
+             * @var \romanzipp\LaravelDTO\Tests\ValidationNestedItem[]
+             */
+            #[ValidationRule(['required', 'array']), ValidationChildrenRule(['integer', 'min:100', 'max:200'], '*.name')]
             public array $items;
         };
     }

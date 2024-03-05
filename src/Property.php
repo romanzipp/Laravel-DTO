@@ -16,6 +16,10 @@ class Property
      */
     private array $validationRules = [];
 
+    private string $childrenValidationAccessor = '*';
+
+    private array $childrenValidationRules = [];
+
     private ?string $modelAttribute = null;
 
     private ?string $requestAttribute = null;
@@ -44,6 +48,11 @@ class Property
 
             if ($attributeInstance instanceof Interfaces\ValidationRuleAttributeInterface) {
                 $this->validationRules = $attributeInstance->getRules();
+            }
+
+            if ($attributeInstance instanceof Interfaces\ValidationRuleChildrenAttributeInterface) {
+                $this->childrenValidationAccessor = $attributeInstance->getAccessor();
+                $this->childrenValidationRules = $attributeInstance->getRules();
             }
 
             if ($attributeInstance instanceof Interfaces\ModelAttributeInterface) {
@@ -97,6 +106,16 @@ class Property
         return $this->validationRules;
     }
 
+    public function getChildrenValidationAccessor(): string
+    {
+        return $this->childrenValidationAccessor;
+    }
+
+    public function getChildrenValidationRules(): array
+    {
+        return $this->childrenValidationRules;
+    }
+
     public function getModelAttribute(): ?string
     {
         return $this->modelAttribute;
@@ -115,6 +134,11 @@ class Property
     public function getValidatorKeyName(): string
     {
         return $this->requestAttribute ?? $this->name;
+    }
+
+    public function getValidatorChildrenKeyName(): string
+    {
+        return "{$this->getValidatorKeyName()}.{$this->childrenValidationAccessor}";
     }
 
     public function hasCast(): bool
