@@ -33,7 +33,7 @@ composer require romanzipp/laravel-dto
 
 All data objects must extend the [`romanzipp\LaravelDTO\AbstractModelData`](src/AbstractModelData.php) class.
 
-### Validation
+## Validation
 
 When attaching the [`#[ValidationRule]`](src/Attributes/ValidationRule.php) any given data will be passed to the Laravel Validator so you can make use of all [available validation rules](https://laravel.com/docs/9.x/validation#available-validation-rules) and even built-in rules instances.
 
@@ -80,7 +80,7 @@ $data = new PersonData([
 ]);
 ```
 
-### Populate Models
+## Populate Models
 
 You can attach a model to any DTO using the [`#[ForModel(Model::class)]`](src/Attributes/ForModel.php) attribute.
 To associate DTO properties with Model attributes, you need to attach the [`#[ModelAttribute()]`](src/Attributes/ModelAttribute.php) attribute to each property.
@@ -194,7 +194,7 @@ App\Data\PersonData^ {
 }
 ```
 
-### Combined usage
+## Combined usage
 
 Of course all those attributes start to make sense if used together. You can attach all attributes separately of make use of the [`#[ValidatedRequestModelAttribute]`](src/Attributes/ValidatedRequestModelAttribute.php) attribute which combines the functionality of all [`#[RequestAttribute]`](src/Attributes/RequestAttribute.php), [`#[ModelAttribute]`](src/Attributes/ModelAttribute.php) and [`#[ValidationRule]`](src/Attributes/ValidationRule.php) attributes.
 
@@ -253,13 +253,13 @@ class TestController
 }
 ```
 
-### Validate arrays
+## Validate arrays
 
 If you only want to validate an array without casting the children items to another DTO, you can make use of the `ValidationChildrenRule` attribute.
 
 The first parameter to the `ValidationChildrenRule` attribute is the validation rule for the children items. The second parameter is the validator path to access the children key to validate.
 
-#### Validate a simple array with numeric indexes
+### Validate a simple array with numeric indexes
 
 ```php
 use romanzipp\LaravelDTO\AbstractModelData;
@@ -279,7 +279,7 @@ class PersonData extends AbstractModelData
 }
 ```
 
-#### Validate associative arrays with named keys
+### Validate associative arrays with named keys
 
 ```php
 use romanzipp\LaravelDTO\AbstractModelData;
@@ -299,7 +299,7 @@ class PersonData extends AbstractModelData
 }
 ```
 
-#### Multiple validation rules
+### Multiple validation rules
 
 ```php
 use romanzipp\LaravelDTO\AbstractModelData;
@@ -322,7 +322,7 @@ class PersonData extends AbstractModelData
 }
 ```
 
-### Nested data
+## Nested data
 
 In some cases you also want to create realted models with a single HTTP call. In this case you can make use of the [`#[NestedModelData(NestedData::class)]`](src/Attributes/NestedModelData.php) which will populate the DTO property with n instances of the defined DTO. 
 
