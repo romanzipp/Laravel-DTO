@@ -156,16 +156,20 @@ class ValidationTest extends TestCase
 
     public function testNestedValidationInvalidItem()
     {
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('The name must be a string.');
+        try {
+            new class(['items' => [['name' => 123]]]) extends AbstractModelData {
+                /**
+                 * @var \romanzipp\LaravelDTO\Tests\ValidationNestedItem[]
+                 */
+                #[NestedModelData(ValidationNestedItem::class), ValidationRule(['required', 'array'])]
+                public array $items;
+            };
 
-        new class(['items' => [['name' => 123]]]) extends AbstractModelData {
-            /**
-             * @var \romanzipp\LaravelDTO\Tests\ValidationNestedItem[]
-             */
-            #[NestedModelData(ValidationNestedItem::class), ValidationRule(['required', 'array'])]
-            public array $items;
-        };
+            self::fail();
+        } catch (ValidationException $exception) {
+            self::assertArrayHasKey('items.name', $exception->validator->getMessageBag()->getMessages());
+            self::assertSame('The name must be a string.', $exception->getMessage());
+        }
     }
 
     public function testValidationArrayKeysWithoutNested()
