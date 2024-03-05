@@ -25,7 +25,6 @@ abstract class AbstractModelData extends AbstractData
     {
         $properties = Property::collectFromClass(static::class);
 
-
         $validationRules = [];
         $validationData = [];
 
