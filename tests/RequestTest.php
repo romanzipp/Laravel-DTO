@@ -137,7 +137,7 @@ class RequestSampleDataMultiNest extends AbstractModelData
     /**
      * @var RequestSampleDataMultiNestFirstItem[]
      */
-    #[NestedModelData(RequestSampleDataMultiNestFirstItem::class) ,RequestAttribute('first_items'), ValidationRule(['required', 'array'])]
+    #[NestedModelData(RequestSampleDataMultiNestFirstItem::class), RequestAttribute('first_items'), ValidationRule(['required', 'array'])]
     public array $items;
 }
 
@@ -146,7 +146,7 @@ class RequestSampleDataMultiNestFirstItem extends AbstractModelData
     /**
      * @var RequestSampleDataMultiNestSecondItem[]
      */
-    #[NestedModelData(RequestSampleDataMultiNestSecondItem::class) ,RequestAttribute('second_items'), ValidationRule(['required', 'array'])]
+    #[NestedModelData(RequestSampleDataMultiNestSecondItem::class), RequestAttribute('second_items'), ValidationRule(['required', 'array'])]
     public array $items;
 }
 
