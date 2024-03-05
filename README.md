@@ -104,11 +104,7 @@ class PersonData extends AbstractModelData
 
     public string $language;          // The `$language` DTO property will be ignored
 }
-```
 
-**Create DTO and store to model**
-
-```php
 $data = new PersonData([
     'name' => 'John Doe',
     'currentAge' => 25,
@@ -120,12 +116,10 @@ $person = $data->toModel()->save();
 
 **Attributes saved in `Person` model**
 
-```json
-{
-    "name": "John Doe",
-    "current_age": 25
-}
-```
+| `name`    | `current_age` |
+|-----------|---------------|
+| John Doe  | 25            |
+
 
 **Note**: You can also pass an existing model to the `toModel()` method.
 
@@ -151,7 +145,7 @@ use romanzipp\LaravelDTO\Attributes\RequestAttribute;
 #[ForModel(Person::class)]
 class PersonData extends AbstractModelData
 {
-    #[RequestAttribute]            // The `$name` DTO property will de populated by the `name` request attribute
+    #[RequestAttribute]            // The `$name` DTO property will be populated by the `name` request attribute
     public string $name;
 
     #[RequestAttribute('my_age')]  // The `$currentAge` DTO property will be populated by `my_age` request attribute
@@ -222,9 +216,12 @@ class PersonData extends AbstractModelData
     ]
     public string $currentAge;
 
-    // Combined usage
     // The `my_age` request attribute will be validated and set to the `current_age` model attribute.
-    #[ValidatedRequestModelAttribute(['required', 'numeric', 'min:18'], 'my_age', 'current_age')]
+    //
+    //                                                             RequestAttribute 
+    //                                         ValidationRule             │          ModelAttribute
+    //                              ┌────────────────┴──────────────┐  ┌──┴───┐  ┌─────┴─────┐
+   #[ValidatedRequestModelAttribute(['required', 'numeric', 'min:18'], 'my_age', 'current_age')];
     public string $currentAge;
 }
 ```
@@ -266,18 +263,18 @@ The first parameter to the `ValidationChildrenRule` attribute is the validation 
 use romanzipp\LaravelDTO\AbstractModelData;
 use romanzipp\LaravelDTO\Attributes\ValidationChildrenRule;
 
-$data = [
-    'logins' => [
-        '127.0.0.1',
-        '127.0.0.1'
-    ]
-];
-
 class PersonData extends AbstractModelData
 {
     #[ValidationChildrenRule(['string', 'ipv4'], '*')];
     public array $logins;
 }
+
+$data = new PersonData([
+    'logins' => [
+        '127.0.0.1',
+        '127.0.0.1'
+    ]
+]);
 ```
 
 #### Validate associative arrays with named keys
@@ -286,18 +283,18 @@ class PersonData extends AbstractModelData
 use romanzipp\LaravelDTO\AbstractModelData;
 use romanzipp\LaravelDTO\Attributes\ValidationChildrenRule;
 
-$data = [
-    'logins' => [
-        ['ip' => '127.0.0.1'],
-        ['ip' => '127.0.0.1']
-    ]
-];
-
 class PersonData extends AbstractModelData
 {
     #[ValidationChildrenRule(['string', 'ipv4'], '*.ip')];
     public array $logins;
 }
+
+$data = new PersonData([
+    'logins' => [
+        ['ip' => '127.0.0.1'],
+        ['ip' => '127.0.0.1']
+    ]
+]);
 ```
 
 #### Multiple validation rules
@@ -305,13 +302,6 @@ class PersonData extends AbstractModelData
 ```php
 use romanzipp\LaravelDTO\AbstractModelData;
 use romanzipp\LaravelDTO\Attributes\ValidationChildrenRule;
-
-$data = [
-    'logins' => [
-        ['ip' => '127.0.0.1', 'device' => 'iOS'],
-        ['ip' => '127.0.0.1', 'device' => 'macOS']
-    ]
-];
 
 class PersonData extends AbstractModelData
 {
@@ -321,6 +311,13 @@ class PersonData extends AbstractModelData
     ];
     public array $logins;
 }
+
+$data = new PersonData([
+    'logins' => [
+        ['ip' => '127.0.0.1', 'device' => 'iOS'],
+        ['ip' => '127.0.0.1', 'device' => 'macOS']
+    ]
+]);
 ```
 
 ## Cast arrays to DTOs (Nested data)
