@@ -19,7 +19,7 @@ abstract class AbstractModelData extends AbstractData
     /**
      * @param array<string, mixed> $data
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function __construct(array $data = [])
     {
@@ -93,9 +93,9 @@ abstract class AbstractModelData extends AbstractData
     /**
      * Take request input and fill into DTO base on the #[RequestAttribute].
      *
-     * @see \romanzipp\LaravelDTO\Attributes\RequestAttribute
+     * @see Attributes\RequestAttribute
      *
-     * @param \Illuminate\Http\Request $request
+     * @param Request $request
      *
      * @return static
      */
@@ -107,7 +107,7 @@ abstract class AbstractModelData extends AbstractData
     /**
      * Create DTO instance from existing model.
      *
-     * @param \Illuminate\Database\Eloquent\Model $model
+     * @param Model $model
      *
      * @return static
      */
@@ -163,11 +163,11 @@ abstract class AbstractModelData extends AbstractData
     /**
      * Fill properties marked with #[ModelAttribute] to new model instanced declared in #[ForModel].
      *
-     * @param \Illuminate\Database\Eloquent\Model|null $model
+     * @param Model|null $model
      *
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return Model
      */
-    public function toModel(Model $model = null): Model
+    public function toModel(?Model $model = null): Model
     {
         $modelClass = null;
 
@@ -203,7 +203,7 @@ abstract class AbstractModelData extends AbstractData
         }
 
         if (null === $model) {
-            /** @var \Illuminate\Database\Eloquent\Model $modelClass */
+            /** @var Model $modelClass */
             $model = new $modelClass();
         }
 
