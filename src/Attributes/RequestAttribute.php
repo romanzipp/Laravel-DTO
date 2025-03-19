@@ -9,7 +9,7 @@ use romanzipp\LaravelDTO\Attributes\Interfaces\RequestAttributeInterface;
 class RequestAttribute implements DataAttributeInterface, RequestAttributeInterface
 {
     public function __construct(
-        private ?string $name = null
+        private ?string $name = null,
     ) {
     }
 

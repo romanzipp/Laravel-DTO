@@ -13,7 +13,7 @@ class ValidationChildrenRule implements DataAttributeInterface, ValidationRuleCh
      */
     public function __construct(
         private array $rules,
-        private string $accessor = '*'
+        private string $accessor = '*',
     ) {
     }
 

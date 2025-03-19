@@ -18,7 +18,7 @@ class ValidatedRequestModelAttribute implements DataAttributeInterface, Validati
     public function __construct(
         private array $rules = [],
         private ?string $requestAttribute = null,
-        private ?string $modelAttribute = null
+        private ?string $modelAttribute = null,
     ) {
     }
 

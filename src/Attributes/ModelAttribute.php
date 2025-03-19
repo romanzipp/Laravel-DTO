@@ -9,7 +9,7 @@ use romanzipp\LaravelDTO\Attributes\Interfaces\ModelAttributeInterface;
 class ModelAttribute implements DataAttributeInterface, ModelAttributeInterface
 {
     public function __construct(
-        private ?string $attribute = null
+        private ?string $attribute = null,
     ) {
     }
 

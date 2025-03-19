@@ -6,7 +6,7 @@ namespace romanzipp\LaravelDTO\Attributes;
 class NestedModelData
 {
     public function __construct(
-        private string $modelDataClass
+        private string $modelDataClass,
     ) {
     }
 

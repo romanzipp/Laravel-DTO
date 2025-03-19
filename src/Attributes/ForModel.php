@@ -6,7 +6,7 @@ namespace romanzipp\LaravelDTO\Attributes;
 class ForModel
 {
     public function __construct(
-        public string $model
+        public string $model,
     ) {
     }
 }

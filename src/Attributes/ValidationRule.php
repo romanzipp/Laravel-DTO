@@ -12,7 +12,7 @@ class ValidationRule implements DataAttributeInterface, ValidationRuleAttributeI
      * @param mixed[] $rules
      */
     public function __construct(
-        private array $rules
+        private array $rules,
     ) {
     }
 
