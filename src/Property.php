@@ -37,6 +37,8 @@ class Property
 
     private ?ConversionInterface $conversion = null;
 
+    private ?string $nestedParentKey = null;
+
     public function __construct(\ReflectionProperty $reflectionProperty)
     {
         $this->name = $reflectionProperty->getName();
@@ -94,6 +96,20 @@ class Property
         }
 
         return $properties;
+    }
+
+    public function setNestedParentKey(string $key): void
+    {
+        $this->nestedParentKey = $key;
+    }
+
+    public function getValidatorName(): string
+    {
+        if (isset($this->nestedParentKey)) {
+            return "{$this->nestedParentKey}.{$this->getName()}";
+        }
+
+        return $this->getName();
     }
 
     public function getName(): string
