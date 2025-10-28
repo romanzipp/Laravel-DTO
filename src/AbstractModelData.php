@@ -38,11 +38,11 @@ abstract class AbstractModelData extends AbstractData
             }
 
             if (array_key_exists($property->getName(), $data)) {
-                $validationData[$property->getValidatorKeyName()] = $data[$property->getName()];
-
                 if ($property->hasCast()) {
                     $data[$property->getName()] = $property->getCastedType($data[$property->getName()]);
                 }
+
+                $validationData[$property->getValidatorKeyName()] = $data[$property->getName()];
             }
         }
 
@@ -64,7 +64,7 @@ abstract class AbstractModelData extends AbstractData
 
                 foreach ($data[$property->getName()] as $datum) {
                     /**
-                     * @var $nestedClass \romanzipp\LaravelDTO\AbstractModelData
+                     * @var \romanzipp\LaravelDTO\AbstractModelData $nestedClass
                      */
                     if (isset($data[self::FLAG_IS_REQUEST_DATA])) {
                         $datum[self::FLAG_IS_REQUEST_DATA] = true;
