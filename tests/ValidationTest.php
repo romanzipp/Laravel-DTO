@@ -47,7 +47,7 @@ class ValidationTest extends TestCase
     public function testInteger()
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('The age must be at least 18.');
+        $this->expectExceptionMessage('The age field must be at least 18.');
 
         new class(['age' => 5]) extends AbstractModelData {
             #[ValidationRule(['numeric', 'min:18'])]
@@ -115,7 +115,7 @@ class ValidationTest extends TestCase
     public function testNestedValidationParentWrongType()
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('The items must be an array.');
+        $this->expectExceptionMessage('The items field must be an array.');
 
         new class(['items' => 'Foo']) extends AbstractModelData {
             /**
@@ -157,7 +157,7 @@ class ValidationTest extends TestCase
     public function testNestedValidationInvalidItem()
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('The name must be a string.');
+        $this->expectExceptionMessage('The name field must be a string.');
 
         new class(['items' => [['name' => 123]]]) extends AbstractModelData {
             /**
@@ -178,7 +178,7 @@ class ValidationTest extends TestCase
         // ['items' => [1, 2, 3]]
 
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('The items.0 must be at least 100.');
+        $this->expectExceptionMessage('The items.0 field must be at least 100.');
 
         new class(['items' => [99]]) extends AbstractModelData {
             /**
@@ -199,7 +199,7 @@ class ValidationTest extends TestCase
         // ['items' => [ ['name' => 'foobar'] ]]
 
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('The items.0.name must be at least 100.');
+        $this->expectExceptionMessage('The items.0.name field must be at least 100.');
 
         new class(['items' => [['name' => 99]]]) extends AbstractModelData {
             /**

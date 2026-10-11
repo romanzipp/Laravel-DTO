@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/packagist/l/romanzipp/Laravel-DTO.svg?style=flat-square)](https://packagist.org/packages/romanzipp/laravel-dto)
 [![GitHub Build Status](https://img.shields.io/github/actions/workflow/status/romanzipp/Laravel-DTO/tests.yml?label=tests&style=flat-square)](https://github.com/romanzipp/Laravel-DTO/actions)
 
-A strongly typed Data Transfer Object **for Laravel** without magic for PHP 8.0+
+A strongly typed Data Transfer Object **for Laravel** without magic for PHP 8.3+
 
 This package extends the functionality of [**romanzipp/DTO**](https://github.com/romanzipp/DTO) to provide more narrow usecases for Laravel applications.
 
