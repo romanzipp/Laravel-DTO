@@ -207,7 +207,7 @@ abstract class AbstractModelData extends AbstractData
         }
 
         if (null === $model) {
-            /** @var Model $modelClass */
+            /** @var class-string<Model> $modelClass */
             $model = new $modelClass();
         }
 
